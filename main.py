@@ -1,56 +1,102 @@
+from hashlib import sha1
 from logging import captureWarnings
+# from multiprocessing import Process as process
 from fastapi import FastAPI
+from pydantic import BaseModel
 import cv2
 import uvicorn
 
 app = FastAPI()
-# close = False
+
+count = 0
+# free_cam = True
+cap = []
 
 
 class capture():
-    #cap = []
 
-    def __init__(self):
+    def __init__(self, name, show_img=False, recording=False, cam_id=0):
+        if name == None:
+            self.name = f"video #{count}"
+        else:
+            self.name = name
+        self.recording = recording
+        self.show_img = show_img
+
+        self.cap = cv2.VideoCapture(cam_id)
         self.close = False
-        self.cap = cv2.VideoCapture(0)
 
-        video_name = 'test' + '.mp4'
+    def start(self):
         while True:
+            video_name = self.name + '.mp4'
             _, frame = self.cap.read()
-            cv2.imshow(video_name[:-4], frame)
-            if (self.close):
-                break
-            if (cv2.waitKey(1) == 27):
+            if self.show_img:
+                cv2.imshow('video', frame)
+                cv2.setWindowTitle('video', video_name)
+            if (cv2.waitKey(1) == 27) or self.close:
                 break
         self.cap.release()
         cv2.destroyAllWindows()
 
-    def kill(self):
+    def rename(self, new_name):
+        self.name = new_name
+
+    def stop(self):
         self.close = True
-        self.cap.release()
-        cv2.destroyAllWindows()
-        # break
-
-
-#cap = []
-# =============================================================================
 
 
 # =============================================================================
 
-# pics: List[] = []
-# =============================================================================
+@app.post("/cam_start")
+def cam_start(name: str = None):
+    global cap
+    global count
+    try:
+        if not name:  # == None:
+            count += 1
+            print(f"session #{count} started")
+        cap = capture(name, show_img=True)
+        cap.start()
+    except:
+        print("error starting video")
 
 
-@app.post("/img_show")
-async def imgShow():
-    cap = capture()
+@app.put("/video_rename")
+def video_rename(name: str):
+    global cap
+    print(name)
+    cap.rename(name)
+# @app.put("/record")
+# def record():
+#     try:
+#         # cap.record()
+#         ...
+#     except:
+#         ...
 
 
-@app.get("/img_close")
-async def imgClose():
-    #close = True
-    cap.kill()
+@app.put("/reset_counter")
+def reset_counter():
+    global count
+    try:
+        count = 0
+        return count
+    except:
+        print("Error resetting counter")
+
+
+@app.get("/get_counter")
+def get_counter():
+    return count
+
+
+@ app.delete("/cam_stop")
+def cam_stop():
+    global cap
+    try:
+        cap.stop()
+    except:
+        print("Error stopping camera")
 
 # @app.post("/take_pic")
 # async def takePic():
@@ -61,5 +107,7 @@ async def imgClose():
 # async def getPic(id: int):
 #     ...
 
+
+# uvicorn main:app --reload
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run("main:app", host="1.1.1.1", port=8000, log_level="info")
