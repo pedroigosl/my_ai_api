@@ -1,7 +1,7 @@
 from hashlib import sha1
 from logging import captureWarnings
 # from multiprocessing import Process as process
-from fastapi import FastAPI
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel
 import cv2
 import uvicorn
