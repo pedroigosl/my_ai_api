@@ -22,8 +22,8 @@ class capture():
             self.name = name
         self.recording = recording
         self.show_img = show_img
-
-        self.cap = cv2.VideoCapture(cam_id)
+        self.cam_id = cam_id
+        self.cap = cv2.VideoCapture(self.cam_id)
         self.close = False
 
     def start(self):
@@ -39,6 +39,9 @@ class capture():
         cv2.destroyAllWindows()
 
     def rename(self, new_name):
+        if self.recording:
+            print("Already recording, name not changed")
+            return
         self.name = new_name
 
     def stop(self):
@@ -48,14 +51,14 @@ class capture():
 # =============================================================================
 
 @app.post("/cam_start")
-def cam_start(name: str = None):
+def cam_start(name: str = None, cam_id: int = 0):
     global cap
     global count
     try:
         if not name:  # == None:
             count += 1
             print(f"session #{count} started")
-        cap = capture(name, show_img=True)
+        cap = capture(name, show_img=True, recording=False, cam_id=cam_id)
         cap.start()
     except:
         print("error starting video")
