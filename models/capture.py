@@ -31,7 +31,7 @@ class capture():
             if self.recording:
                 self.writer.write(frame)
         self.cap.release()
-        if self.recording == True:
+        if self.recording:
             self.writer.release()
         cv2.destroyAllWindows()
 
@@ -41,13 +41,16 @@ class capture():
             return
         self.name = new_name
 
-    def record(self, new_name=None):
+    def record(self, new_name=None, path="videos/"):
+        if self.recording:
+            print("Already recording")
+            return
         if new_name:
             self.rename(new_name)
-        self.recording = True
         self.writer = cv2.VideoWriter(
-            self.name, cv2.VideoWriter_fourcc(*'mp4v'), 20,
+            f"{path}{self.name}", cv2.VideoWriter_fourcc(*'mp4v'), 20,
             (self.width, self.height))
+        self.recording = True
 
     def stop(self):
         self.close = True

@@ -2,7 +2,7 @@ from hashlib import sha1
 from logging import captureWarnings
 # from multiprocessing import Process as process
 from fastapi import FastAPI, Path, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Required
 import uvicorn
 
 from models import capture as cp
@@ -26,34 +26,41 @@ app = FastAPI(title="Remote Camera API",
                   "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
               })
 
+# =============================================================================
+
 count = 0
 
 cap = None
 
+name_regex = "^\w{1,25}"
+path_regex = "^/(?:\w+/){0,2}$"
 
 # =============================================================================
 
+
 @app.post("/open_camera")
-def open_camera(name: str = None, cam_id: int = 0):
+def open_camera(name: str = Query(default=None, regex=name_regex),
+                cam_id: int = Query(default=0)):
     return cc.startCam(name, cam_id)
 
 
 @app.put("/video_rename")
-def video_rename(name: str):
+def video_rename(name: str = Query(default=Required, regex=name_regex)):
     return cc.renameVideo(name)
 
 
 @app.put("/record")
-def record():
-    return cc.record()
+def record(name: str = Query(default=None, regex=name_regex),
+           path: str = Query(default="videos/", regex=path_regex)):
+    return cc.record(name, path)
 
 
-@app.put("/reset_video_counter")
+@ app.put("/reset_video_counter")
 def reset_counter():
     return cc.resetCounter()
 
 
-@app.get("/get_video_counter")
+@ app.get("/get_video_counter")
 def get_counter():
     return cc.count
 
