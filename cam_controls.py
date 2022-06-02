@@ -7,7 +7,7 @@ cap = None
 # =============================================================================
 
 
-def startCam(name: str = None, cam_id: int = 0):
+def startCam(name, cam_id):
     global cap
     global count
 
@@ -18,18 +18,15 @@ def startCam(name: str = None, cam_id: int = 0):
     cap.start()
 
 
-def renameVideo(name: str):
+def renameVideo(name):
     global cap
     print(name)
     cap.rename(name)
 
 
-def record():
+def record(name, path):
     global cap
-    try:
-        cap.record()
-    except:
-        print("could not record")
+    cap.record(name, path)
 
 
 def resetCounter():

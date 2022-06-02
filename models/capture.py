@@ -3,10 +3,11 @@ import cv2
 
 class capture():
     def __init__(self, name, show_img=False, recording=False, cam_id=0):
+        self.extension = ".mp4"
         if name == None:
-            self.name = "capture.mp4"
+            self.name = f"capture{self.extension}"
         else:
-            self.name = name + '.mp4'
+            self.name = f"{name}{self.extension}"
         self.recording = recording
         self.show_img = show_img
         self.cam_id = cam_id
@@ -19,33 +20,33 @@ class capture():
         self.writer = None
 
     def start(self):
-        while True:
+        while (cv2.waitKey(1) != 27) and not self.close:
             title = self.name
             _, frame = self.cap.read()
             if self.show_img:
                 cv2.imshow('video', frame)
                 cv2.setWindowTitle('video', title)
-            if (cv2.waitKey(1) == 27) or self.close:
-                break
 
             if self.recording:
                 self.writer.write(frame)
-        self.cap.release()
-        if self.recording:
-            self.writer.release()
-        cv2.destroyAllWindows()
+        self.stop()
+        # self.cap.release()
+        # if self.recording:
+        #     self.writer.release()
+        # cv2.destroyAllWindows()
 
     def rename(self, new_name):
         if self.recording:
             print("Already recording, name not changed")
             return
-        self.name = new_name
+        self.name = f"{new_name}{self.extension}"
 
     def record(self, new_name=None, path="videos/"):
         if self.recording:
             print("Already recording")
             return
         if new_name:
+            print("in")
             self.rename(new_name)
         self.writer = cv2.VideoWriter(
             f"{path}{self.name}", cv2.VideoWriter_fourcc(*'mp4v'), 20,
@@ -54,3 +55,7 @@ class capture():
 
     def stop(self):
         self.close = True
+        self.cap.release()
+        if self.recording:
+            self.writer.release()
+        cv2.destroyAllWindows()
