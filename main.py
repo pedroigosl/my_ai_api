@@ -69,6 +69,11 @@ def get_counter():
 def close_camera():
     return cc.stopCam()
 
+
+@ app.post("/take_pic")
+def take_pic():
+    return cc.takePic()
+
 # =============================================================================
 
 

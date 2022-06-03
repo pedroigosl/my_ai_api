@@ -1,6 +1,6 @@
 from models import capture as cp
 
-count = 0
+vid_count = 0
 
 cap = None
 
@@ -9,13 +9,14 @@ cap = None
 
 def startCam(name, cam_id):
     global cap
-    global count
+    global vid_count
 
     if not name:  # == None:
-        count += 1
-        print(f"session #{count} started")
+        vid_count += 1
+        print(f"session #{vid_count} started")
+        name = f"video #{vid_count}"
     cap = cp.capture(name, show_img=True, recording=False, cam_id=cam_id)
-    cap.start()
+    cap.run()
 
 
 def renameVideo(name):
@@ -30,28 +31,28 @@ def record(name, path):
 
 
 def resetCounter():
-    global count
+    global vid_count
     try:
-        count = 0
-        return count
+        vid_count = 0
+        return vid_count
     except:
         print("Error resetting counter")
 
 
 def getCounter():
-    return count
+    return vid_count
 
 
 def stopCam():
     global cap
-    try:
-        cap.stop()
-    except:
-        print("Error stopping camera")
 
-# @app.post("/take_pic")
-# async def takePic():
-#     ...
+    cap.stop()
+    cap = None
+
+
+def takePic():
+    global cap
+    cap.screenshot()
 
 
 # @app.get("/get_pic")
