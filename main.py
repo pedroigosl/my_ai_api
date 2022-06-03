@@ -28,10 +28,6 @@ app = FastAPI(title="Remote Camera API",
 
 # =============================================================================
 
-count = 0
-
-cap = None
-
 name_regex = "^\w{1,25}"
 path_regex = "^(?:\w+/){0,2}$"
 
@@ -55,14 +51,10 @@ def record(name: str = Query(default=None, regex=name_regex),
     return cc.record(name, path)
 
 
-@ app.put("/reset_video_counter")
-def reset_counter():
-    return cc.resetCounter()
-
-
-@ app.get("/get_video_counter")
-def get_counter():
-    return cc.count
+@ app.post("/take_pic")
+def take_pic(name: str = Query(default=None, regex=name_regex),
+             path: str = Query(default="pictures/", regex=path_regex)):
+    return cc.takePic(name, path)
 
 
 @ app.delete("/close_camera")
@@ -70,9 +62,19 @@ def close_camera():
     return cc.stopCam()
 
 
-@ app.post("/take_pic")
-def take_pic():
-    return cc.takePic()
+@ app.post("/modify")
+def modify():
+    return cc.modify()
+
+
+@ app.put("/reset_video_counter")
+def reset_counter():
+    return cc.resetCounter()
+
+
+@ app.get("/get_video_counter")
+def get_counter():
+    return cc.getCounter()
 
 # =============================================================================
 

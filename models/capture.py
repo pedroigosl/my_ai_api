@@ -28,18 +28,25 @@ class capture():
         # Video writer object
         self.writer = None
 
+        # Image modifier
+        self.modifier = None
+
     # Starts and runs video
     def run(self):
         while not self.close:
             title = self.vid_name
             _, frame = self.cap.read()
-            if self.show_img:
-                cv2.imshow('video', frame)
-                cv2.setWindowTitle('video', title)
 
             # Records frames
             if self.recording:
                 self.writer.write(frame)
+
+            if self.modifier:
+                frame = self.modifier(frame)
+
+            if self.show_img:
+                cv2.imshow('video', frame)
+                cv2.setWindowTitle('video', title)
 
             if (cv2.waitKey(1) == 27):
                 self.stop()

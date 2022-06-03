@@ -1,6 +1,9 @@
 from models import capture as cp
+import cv2
 
 vid_count = 0
+
+pic_count = 0
 
 cap = None
 
@@ -30,6 +33,24 @@ def record(name, path):
     cap.record(name, path)
 
 
+def takePic(name, path):
+    global cap
+    global pic_count
+
+    if not name:  # == None:
+        pic_count += 1
+        print(f"pic #{pic_count} taken")
+        name = f"pic #{pic_count}"
+    cap.screenshot(name, path)
+
+
+def stopCam():
+    global cap
+
+    cap.stop()
+    cap = None
+
+
 def resetCounter():
     global vid_count
     try:
@@ -43,17 +64,13 @@ def getCounter():
     return vid_count
 
 
-def stopCam():
+def say(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
+def modify():
     global cap
-
-    cap.stop()
-    cap = None
-
-
-def takePic():
-    global cap
-    cap.screenshot()
-
+    cap.modifier = say
 
 # @app.get("/get_pic")
 # async def getPic(id: int):
