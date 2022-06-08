@@ -29,7 +29,8 @@ class capture():
         self.writer = None
 
         # Image modifier
-        self.modifier = None
+        self.mask = None
+        self.mask_args = None
 
     # Starts and runs video
     def run(self):
@@ -41,16 +42,20 @@ class capture():
             if self.recording:
                 self.writer.write(frame)
 
-            if self.modifier:
-                frame = self.modifier(frame)
+            if self.mask:
+                if self.mask_args:
+                    frame = self.mask(frame, self.mask_args)
+                else:
+                    frame = self.mask(frame)
 
             if self.show_img:
                 cv2.imshow('video', frame)
                 cv2.setWindowTitle('video', title)
 
-            if (cv2.waitKey(1) == 27):
+            key = cv2.waitKey(1)
+            if (key == 27):
                 self.stop()
-            elif (cv2.waitKey(1) == 32):
+            elif (key == 32):
                 self.screenshot()
         self.cap.release()
         if self.recording:
@@ -85,6 +90,10 @@ class capture():
                 *'mp4v'), 20,
             (self.width, self.height))
         self.recording = True
+
+    def masking(self, func, args=None):
+        self.mask = func
+        self.mask_args = args
 
     # Stops video
     def stop(self):

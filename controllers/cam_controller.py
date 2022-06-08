@@ -1,4 +1,4 @@
-from models import capture as cp
+from core import capture as cp
 import cv2
 
 vid_count = 0
@@ -64,13 +64,15 @@ def getCounter():
     return vid_count
 
 
-def say(img):
+def grayscale(img):
+
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-def modify():
+def mask():
     global cap
-    cap.modifier = say
+    # args = ['hey', 'hoo']
+    cap.masking(grayscale)
 
 # @app.get("/get_pic")
 # async def getPic(id: int):

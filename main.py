@@ -5,8 +5,8 @@ from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel, Required
 import uvicorn
 
-from models import capture as cp
-import cam_controls as cc
+#from core import capture as cp
+import controllers.cam_controller as cc
 
 description = """
 API for controlling camera, recording and applying computer vision
@@ -62,9 +62,11 @@ def close_camera():
     return cc.stopCam()
 
 
-@ app.post("/modify")
-def modify():
-    return cc.modify()
+@ app.post("/apply_mask")
+def apply_mask():
+    return cc.mask()
+
+# =============================================================================
 
 
 @ app.put("/reset_video_counter")
