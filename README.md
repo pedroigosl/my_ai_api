@@ -1,2 +1,3 @@
-# my_first_api
-my first api
+# WORK IN PROGRESS
+
+first steps of a computer vision project for applied robotics
