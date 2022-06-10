@@ -1,4 +1,5 @@
 from core import capture as cp
+from core import cv_masker as msk
 import cv2
 
 vid_count = 0
@@ -69,10 +70,17 @@ def grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
+def classify(img):
+    mask = msk.classifier('models/coco/model.tflite',
+                          'models/coco/labelmap.txt')
+
+    return mask.classify(img)
+
+
 def mask():
     global cap
     # args = ['hey', 'hoo']
-    cap.masking(grayscale)
+    cap.masking(classify)
 
 # @app.get("/get_pic")
 # async def getPic(id: int):
