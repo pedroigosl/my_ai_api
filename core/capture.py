@@ -24,6 +24,7 @@ class capture():
         self.cap = cv2.VideoCapture(self.cam_id)
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.frame = None
 
         # Video writer object
         self.writer = None
@@ -56,7 +57,8 @@ class capture():
             if (key == 27):
                 self.stop()
             elif (key == 32):
-                self.screenshot(pic = frame)
+                self.screenshot()
+            self.frame = frame
         self.cap.release()
         if self.recording:
             self.writer.release()
@@ -70,10 +72,8 @@ class capture():
         self.vid_name = new_name
 
     # Takes picture
-    def screenshot(self, name=None, pic = None, path="pictures/"):
-        if not pic.any():
-            _, pic = self.cap.read()
-
+    def screenshot(self, name=None, path="pictures/"):
+        pic = self.frame
         if name == None:
             name = f"{self.vid_name} screenshot"
         cv2.imwrite(f"{path}{name}{self.pic_ext}", pic)
