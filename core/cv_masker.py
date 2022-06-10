@@ -13,6 +13,8 @@ class classifier():
 
         self.classified = False
 
+        self.labels = None
+
     def classify(self, img_path=None):
         if img_path:
             self.img_path = img_path
@@ -47,12 +49,18 @@ class classifier():
         interpreter.invoke()
 
         boxes = interpreter.get_tensor(output_details[0]['index'])[0]
-        classes = interpreter.get_tensor(output_details[1]['index'])[0]
+        labels = interpreter.get_tensor(output_details[1]['index'])[0]
         scores = interpreter.get_tensor(output_details[2]['index'])[0]
         num = interpreter.get_tensor(output_details[3]['index'])[0]
 
-        self.results = [boxes, classes, scores, num]
+        self.results = {"bbox": boxes,
+                        "labels": labels,
+                        "scores": scores,
+                        "num": num}
         self.classified = True
+        self.get_labels()
+        imgf = self.mark_bbox(img)
+        cv2.imwrite('blah.png', imgf)
         return self.results
 
     def get_labels(self):
@@ -62,18 +70,56 @@ class classifier():
 
         file = open(self.labels_path)
         category_index = {}
-        for i, val in enumerate(file):
+        for i, label in enumerate(file):
             if i == 0:
-                val = val[:-1]
-                blank = val.copy()
+                label = label[:-1]
+                blank = label
             else:
-                val = val[:-1]
-                if val != blank:
-                    category_index.update({(i-1): {'id': (i-1), 'name': val}})
-
+                label = label[:-1]
+                if label != blank:
+                    category_index.update({(i-1): label})
         file.close()
+        self.labels = category_index
+        return category_index
+
+    def mark_bbox(self, img, labels=True, threshold=0.6):
+        if not self.classified:
+            print("ERROR - Not yet classified. Run classify")
+            return
+        res = self.results
+        bbox = res['bbox']
+        img_height, img_width, _ = img.shape
+        for i, box in enumerate(bbox):
+            if res['scores'][i] >= threshold:
+                x = np.empty([2, 1])
+                y = np.empty([2, 1])
+                y[0], x[0], y[1], x[1] = box
+                x, y = reescale_bbox(self, x, y, img_height, img_width)
+                color = (0, 255, 0)
+                cv2.rectangle(img, (int(x[0]), int(y[0])),
+                              (int(x[1]), int(y[1])), color, 2)
+                if labels:
+                    if self.labels:
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        font_scale = 1
+                        thickness = 2
+                        label = f"{self.labels[res['labels'][i]]} {100*res['scores'][i]:.0f}%"
+                        cv2.putText(img, label, (int(x[0]), int(y[1])),
+                                    font, font_scale, color, thickness)
+                    else:
+                        print('ERROR - labels not loaded. Run get_labels() first')
+        return img
+
+
+def reescale_bbox(self, x, y, height, width):
+    x[0] = x[0] * width
+    x[1] = x[1] * width
+    y[0] = y[0] * height
+    y[1] = y[1] * height
+    return x, y
 
 
 cl = classifier('../models/coco/model.tflite',
                 '../models/coco/labelmap.txt')
 cl.classify('../pictures/pic #1.png')
+cl.get_labels()
