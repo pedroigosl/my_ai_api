@@ -56,7 +56,7 @@ class capture():
             if (key == 27):
                 self.stop()
             elif (key == 32):
-                self.screenshot()
+                self.screenshot(pic = frame)
         self.cap.release()
         if self.recording:
             self.writer.release()
@@ -70,8 +70,9 @@ class capture():
         self.vid_name = new_name
 
     # Takes picture
-    def screenshot(self, name=None, path="pictures/"):
-        _, pic = self.cap.read()
+    def screenshot(self, name=None, pic = None, path="pictures/"):
+        if not pic.any():
+            _, pic = self.cap.read()
 
         if name == None:
             name = f"{self.vid_name} screenshot"
