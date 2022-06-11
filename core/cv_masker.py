@@ -108,9 +108,3 @@ class classifier():
         y[0] = y[0] * height
         y[1] = y[1] * height
         return x, y
-
-
-# cl = classifier('../models/coco/model.tflite',
-#                 '../models/coco/labelmap.txt')
-# cl.classify('../pictures/pic #1.png')
-# cl.get_labels()

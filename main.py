@@ -6,7 +6,9 @@ from pydantic import BaseModel, Required
 import uvicorn
 
 #from core import capture as cp
-import controllers.cam_controller as cc
+from controllers import cam_controller as cc
+from controllers import ai_controller as ai
+from utils import session_data as sd
 
 description = """
 API for controlling camera, recording and applying computer vision
@@ -15,15 +17,11 @@ API for controlling camera, recording and applying computer vision
 
 app = FastAPI(title="Remote Camera API",
               description=description,
-              version="0.0.1",
+              version="1.1.0",
               contact={
                     "name": "Pedro Igo SL",
                     "url": "https://github.com/pedroigosl",
                     "email": "pedroigosl@gmail.com",
-              },
-              license_info={
-                  "name": "Apache 2.0",
-                  "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
               })
 
 # =============================================================================
@@ -33,50 +31,65 @@ path_regex = "^(?:\w+/){0,2}$"
 
 # =============================================================================
 
+session = sd.data()
+
+# =============================================================================
+
 
 @app.post("/open_camera")
 def open_camera(name: str = Query(default=None, regex=name_regex),
                 cam_id: int = Query(default=0)):
-    return cc.startCam(name, cam_id)
+    return cc.startCam(session, name, cam_id)
 
 
 @app.put("/video_rename")
 def video_rename(name: str = Query(default=Required, regex=name_regex)):
-    return cc.renameVideo(name)
+    return cc.renameVideo(session, name)
 
 
 @app.put("/record")
 def record(name: str = Query(default=None, regex=name_regex),
            path: str = Query(default="videos/", regex=path_regex)):
-    return cc.record(name, path)
+    return cc.record(session, name, path)
 
 
 @ app.post("/take_pic")
 def take_pic(name: str = Query(default=None, regex=name_regex),
              path: str = Query(default="pictures/", regex=path_regex)):
-    return cc.takePic(name, path)
+    return cc.takePic(session, name, path)
 
 
 @ app.delete("/close_camera")
 def close_camera():
-    return cc.stopCam()
+    return cc.stopCam(session)
 
-
-@ app.post("/apply_mask")
-def apply_mask():
-    return cc.mask()
 
 # =============================================================================
 
 
 @ app.put("/reset_video_counter")
 def reset_counter():
-    return cc.resetCounter()
+    return cc.resetCounter(session)
 
 
 @ app.get("/get_video_counter")
 def get_counter():
-    return cc.getCounter()
+    return cc.getCounter(session)
+
+
+# =============================================================================
+
+
+@ app.post("/apply_mask")
+def apply_mask():
+    return ai.mask(session)
+
+
+@ app.put("/set_paths")
+def set_paths(model_path: str = Query(default='models/coco/model.tflite', regex=path_regex),
+              labels_path: str = Query(default='models/coco/labelmap.txt', regex=path_regex)):
+    return ai.set_paths(model_path, labels_path)
+
 
 # =============================================================================
 
