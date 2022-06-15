@@ -22,6 +22,9 @@ class classifier():
         self.input_details = self.cnn.get_input_details()
         self.output_details = self.cnn.get_output_details()
 
+        print(np.shape(self.output_details))
+        print(self.output_details[0])
+        
         self.input_shape = self.input_details[0]['shape']
 
     def classify(self, img, threshold=0.6):

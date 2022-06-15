@@ -6,18 +6,17 @@ labels_path = 'models/coco/labelmap.txt'
 
 # Internal method =============================================================
 
+mask = None
 
 def classify(img):
-    mask = msk.classifier(model_path,
-                          labels_path)
-
     return mask.classify(img)
 
 # =============================================================================
 
 
 def mask(session):
-
+    global mask
+    mask = msk.classifier(model_path, labels_path)
     # args = ['hey', 'hoo']
     session.cap.masking(classify)
 
