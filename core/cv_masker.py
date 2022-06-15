@@ -23,7 +23,8 @@ class classifier():
         self.output_details = self.cnn.get_output_details()
 
         print(np.shape(self.output_details))
-        print(self.output_details[0])
+        for output in self.output_details:
+            print(output)
         
         self.input_shape = self.input_details[0]['shape']
 
