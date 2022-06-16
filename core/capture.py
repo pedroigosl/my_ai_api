@@ -1,3 +1,4 @@
+from importlib.util import set_loader
 import cv2
 
 
@@ -33,7 +34,10 @@ class capture():
         self.mask = None
         self.mask_args = None
 
+        self.done = False
+
     # Starts and runs video
+
     def run(self):
         while not self.close:
             title = self.vid_name
@@ -43,12 +47,14 @@ class capture():
             if self.recording:
                 self.writer.write(frame)
 
-            if self.mask:
+            if self.mask and not self.done:
                 if self.mask_args:
-                    frame = self.mask(frame, self.mask_args)
+                    # frame =
+                    self.mask(frame, self.mask_args)
                 else:
-                    frame = self.mask(frame)
-
+                    # frame =
+                    self.mask(frame)
+                self.done = True
             if self.show_img:
                 cv2.imshow('video', frame)
                 cv2.setWindowTitle('video', title)

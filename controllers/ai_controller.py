@@ -1,8 +1,8 @@
 from core import cv_masker as msk
 
 
-model_path = 'models/coco/model.tflite'
-labels_path = 'models/coco/labelmap.txt'
+model_path = 'models/yolov5/model.tflite'
+labels_path = 'models/yolov5/labelmap.txt'
 
 # Internal method =============================================================
 

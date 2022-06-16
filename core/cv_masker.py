@@ -8,7 +8,7 @@ class classifier():
         self.model_path = model_path
         self.labels_path = labels_path
 
-        self.results = None
+        self.results = []
 
         self.classified = False
 
@@ -46,19 +46,24 @@ class classifier():
         # Run the inference
         self.cnn.invoke()
 
-        # Get results (NEEDS TO BE REWRITTEN)
-        boxes = self.cnn.get_tensor(self.output_details[0]['index'])[0]
-        labels = self.cnn.get_tensor(self.output_details[1]['index'])[0]
-        scores = self.cnn.get_tensor(self.output_details[2]['index'])[0]
-        num = self.cnn.get_tensor(self.output_details[3]['index'])[0]
+        for i, output in enumerate(self.output_details):
+            self.results.append(self.cnn.get_tensor(output['index']))
 
-        self.results = {"bbox": boxes,
-                        "labels": labels,
-                        "scores": scores,
-                        "num": num}
+        print(self.results)
+
+        # Get results (NEEDS TO BE REWRITTEN)
+        # boxes = self.cnn.get_tensor(self.output_details[0]['index'])[0]
+        # labels = self.cnn.get_tensor(self.output_details[1]['index'])[0]
+        # scores = self.cnn.get_tensor(self.output_details[2]['index'])[0]
+        # num = self.cnn.get_tensor(self.output_details[3]['index'])[0]
+
+        # self.results = {"bbox": boxes,
+        #                 "labels": labels,
+        #                 "scores": scores,
+        #                 "num": num}
         self.classified = True
-        self.get_labels()
-        return self.mark_bbox(img, threshold)
+        # self.get_labels()
+        # return self.results  # self.mark_bbox(img, threshold)
 
     def get_labels(self):
         if not self.classified:
