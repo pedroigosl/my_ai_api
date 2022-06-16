@@ -1,4 +1,5 @@
 import cv2
+import time
 
 
 # Video capture object
@@ -25,6 +26,15 @@ class capture():
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.frame = None
+        # Frame timer
+        self.timer = {'start': 0, 'end': 0}
+
+        # Video text overlay attributes
+        self.font = cv2.FONT_HERSHEY_SIMPLEX
+        self.font_scale = 0.5
+        self.font_color = (0, 255, 0)
+        self.font_thickness = 2
+        self.pos = (5, 15)
 
         # Video writer object
         self.writer = None
@@ -34,10 +44,18 @@ class capture():
         self.mask_args = None
 
     # Starts and runs video
+
     def run(self):
+        self.timer['start'] = time.time()
+        self.timer['end'] = time.time()
         while not self.close:
             title = self.vid_name
             _, frame = self.cap.read()
+
+            # fps overlay
+            self.timer['end'] = time.time()
+            frame = self.fps_overlay(frame)
+            self.timer['start'] = self.timer['end']
 
             # Records frames
             if self.recording:
@@ -95,6 +113,12 @@ class capture():
     def masking(self, func, args=None):
         self.mask = func
         self.mask_args = args
+
+    def fps_overlay(self, frame):
+        text = f"fps: {int(1/(self.timer['end'] - self.timer['start']))}"
+        cv2.putText(frame, text, self.pos,
+                    self.font, self.font_scale, self.font_color, self.font_thickness)
+        return frame
 
     # Stops video
     def stop(self):
