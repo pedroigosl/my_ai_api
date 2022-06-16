@@ -6,7 +6,6 @@ labels_path = 'models/coco/labelmap.txt'
 
 # Internal method =============================================================
 
-mask = None
 
 def classify(img):
     return mask.classify(img)

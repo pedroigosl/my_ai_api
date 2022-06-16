@@ -25,7 +25,7 @@ class classifier():
         print(np.shape(self.output_details))
         for output in self.output_details:
             print(output)
-        
+
         self.input_shape = self.input_details[0]['shape']
 
     def classify(self, img, threshold=0.6):
@@ -46,6 +46,7 @@ class classifier():
         # Run the inference
         self.cnn.invoke()
 
+        # Get results (NEEDS TO BE REWRITTEN)
         boxes = self.cnn.get_tensor(self.output_details[0]['index'])[0]
         labels = self.cnn.get_tensor(self.output_details[1]['index'])[0]
         scores = self.cnn.get_tensor(self.output_details[2]['index'])[0]
