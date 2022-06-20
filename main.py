@@ -109,7 +109,11 @@ def set_paths(model_path: str = Query(default='models/coco/model.tflite', regex=
 
 # =============================================================================
 
+# port=$1
+# ip=$(hostname -I | awk '{print $1}')
+# (uvicorn main:app --host "$ip" --port "$port")
 
 # uvicorn main:app --reload
-if __name__ == "__main__":
+
+# if __name__ == "__main__":
     uvicorn.run("main:app", host="1.1.1.1", port=8000, log_level="info")
