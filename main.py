@@ -2,6 +2,7 @@ from hashlib import sha1
 from logging import captureWarnings
 # from multiprocessing import Process as process
 from fastapi import FastAPI, Path, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Required
 import uvicorn
 
@@ -23,6 +24,21 @@ app = FastAPI(title="Remote Camera API",
                     "url": "https://github.com/pedroigosl",
                     "email": "pedroigosl@gmail.com",
               })
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # =============================================================================
 
