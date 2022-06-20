@@ -96,9 +96,13 @@ def get_counter():
 # =============================================================================
 
 
-@ app.post("/apply_mask")
-def apply_mask():
+@ app.post("/mask")
+def mask():
     return ai.mask(session)
+
+@app.put("/unmask")
+def unmask():
+    return ai.unmask(session)
 
 
 @ app.put("/set_paths")
@@ -115,5 +119,5 @@ def set_paths(model_path: str = Query(default='models/coco/model.tflite', regex=
 
 # uvicorn main:app --reload
 
-# if __name__ == "__main__":
-    uvicorn.run("main:app", host="1.1.1.1", port=8000, log_level="info")
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")

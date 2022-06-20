@@ -19,6 +19,8 @@ def mask(session):
     # args = ['hey', 'hoo']
     session.cap.masking(classify)
 
+def unmask(session):
+    session.cap.masking(None)
 
 def set_paths(model, labels):
     global model_path

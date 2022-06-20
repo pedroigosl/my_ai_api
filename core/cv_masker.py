@@ -1,4 +1,4 @@
-import tensorflow.lite as tf
+import tflite_runtime.interpreter as tf
 import cv2
 import numpy as np
 
